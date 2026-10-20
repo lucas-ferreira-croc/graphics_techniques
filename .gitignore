@@ -426,3 +426,22 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+
+# pandora project stuff
+assets/**
+bin/**
+external/**
+CMakeFiles/**
+x64/**
+base/*.vcxproj*
+base/*.cmake*
+base/CMakeFiles/**
+techniques/*.vcxproj*
+techniques/*.cmake*
+techniques/CMakeFiles/**
+*.vcxproj*
+*.sln
+cmake_install.cmake
+vulkan/**
+CMakeCache.txt
