@@ -1,4 +1,5 @@
 #include "VulkanBuffer.h"
+#include "VulkanTexture.h"
 // vulkan buffer
 
 namespace vkt
@@ -62,6 +63,7 @@ namespace vkt
 
         return vkInvalidateMappedMemoryRanges(device, 1, &mappedRange);
     }
+
 
     void Buffer::destroy()
     {
