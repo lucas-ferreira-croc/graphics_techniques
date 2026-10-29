@@ -81,7 +81,6 @@ namespace vkt
 			VkImageAspectFlags aspectMask,
 			VkImageLayout oldImageLayout,
 			VkImageLayout newImageLayout,
-			VkImageSubresourceRange subresourceRange,
 			VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
 			VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT
 		);
