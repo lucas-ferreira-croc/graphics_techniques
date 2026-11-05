@@ -405,7 +405,7 @@ namespace vkt
         inline VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo()
         {
             VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo{};
-            pipelineVertexInputStateCreateInfo.sType == VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+            pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
             return pipelineVertexInputStateCreateInfo;
         }
 
@@ -415,7 +415,7 @@ namespace vkt
         )
         {
             VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo{};
-            pipelineVertexInputStateCreateInfo.sType == VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+            pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
             pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexInputBindingDescriptions.size());
             pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = vertexInputBindingDescriptions.data();
             pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexInputAttributeDescriptions.size());
