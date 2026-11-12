@@ -31,7 +31,7 @@ namespace vkt
 		void prepare();
 
 		void upate(uint32_t currentBuffer);
-		void draw(const VkCommandBuffer commandBuffer, uint32_t currentFrame);
+		void draw(const VkCommandBuffer commandBuffer, uint32_t currentBuffer);
 		void resize(uint32_t width, uint32_t height);
 
 		void freeResources();
