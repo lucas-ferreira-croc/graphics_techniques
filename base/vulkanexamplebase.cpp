@@ -257,10 +257,10 @@ void VulkanExampleBase::beginDynamicRendering(VkCommandBuffer commandBuffer)
     vkt::tools::insertImageMemoryBarrier(
         commandBuffer,
         depthStencil.image,
-        VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+        0,
         VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
         VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+        VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL,
         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
         VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
         VkImageSubresourceRange{ VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 0, 1, 0, 1 }
@@ -553,8 +553,8 @@ void VulkanExampleBase::prepare()
         ui.depthFormat = depthFormat;
         ui.shaders =
         {
-                loadShader(getShaderAsBasePath() + "base/uioverlay.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-                loadShader(getShaderAsBasePath() + "base/uioverlay.frag.spv", VK_SHADER_STAGE_VERTEX_BIT)
+                loadShader(getShadersPath() + "base/uioverlay.vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+                loadShader(getShadersPath() + "base/uioverlay.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
         };
         ui.prepare();
     }
@@ -654,7 +654,7 @@ void VulkanExampleBase::renderLoop()
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            if(msg.message = WM_QUIT)
+            if(msg.message == WM_QUIT)
             {
                 quitMessageReceived = true;
                 break;
@@ -792,6 +792,8 @@ VulkanExampleBase::VulkanExampleBase()
         std::cin.get();
         exit(0);
     }
+
+    vkt::tools::errorModeSilent = false;
 
     if (commandLineParser.isSet("validation")) {
         settings.validation = true;
@@ -959,7 +961,7 @@ bool VulkanExampleBase::initVulkan()
     }
 
     uint32_t gpuCount = 0;
-    VK_CHECK_RESULT(vkEnumeratePhysicalDevices(instance, &gpuCount, &physicalDevice));
+    VK_CHECK_RESULT(vkEnumeratePhysicalDevices(instance, &gpuCount, nullptr));
     if(gpuCount == 0)
     {
         vkt::tools::exitFatal("no device with vulkan support found", -1);
@@ -1094,7 +1096,7 @@ HWND VulkanExampleBase::setupWindow(HINSTANCE hinstance, WNDPROC wndproc)
     .hIconSm = LoadIcon(NULL, IDI_WINLOGO),
     };
 
-    if(!RegisterClassExA(&wndClass))
+    if(!RegisterClassEx(&wndClass))
     {
         std::cout << "could not register window class!\n";
         fflush(stdout);
@@ -1184,7 +1186,7 @@ HWND VulkanExampleBase::setupWindow(HINSTANCE hinstance, WNDPROC wndproc)
 
     ShowWindow(window, SW_SHOW);
     SetForegroundWindow(window);
-
+    SetFocus(window);
     return window;
 }
 
@@ -1327,6 +1329,6 @@ void VulkanExampleBase::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 #if defined(_WIN32)
 void VulkanExampleBase::OnHandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-}
+};
 #endif
 #endif

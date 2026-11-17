@@ -189,7 +189,7 @@ namespace vkt
 		VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
 		if(pNextChain)
 		{
-			physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+			physicalDeviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 			physicalDeviceFeatures2.features = enabledFeatures;
 			physicalDeviceFeatures2.pNext = pNextChain;
 			

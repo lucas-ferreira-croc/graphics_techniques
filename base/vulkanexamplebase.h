@@ -99,8 +99,8 @@ public:
 public:
 	bool prepared = false;
 	bool resized = false;
-	uint32_t width = 1280 * 2;
-	uint32_t height = 1280 * 2;
+	uint32_t width = 1280;
+	uint32_t height = 720;
 
 	vkt::UIOverlay ui;
 	CommandLineParser commandLineParser;

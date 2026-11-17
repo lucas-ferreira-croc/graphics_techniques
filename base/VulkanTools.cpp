@@ -35,8 +35,7 @@ namespace vkt
 	namespace tools 
 	{
 		std::string resourcePath = "";
-		bool errorModeSilnet = false;
-
+		bool errorModeSilent = false;
 
 		std::string errorString(VkResult errorCode)
 		{
@@ -279,8 +278,8 @@ namespace vkt
 			imageMemoryBarrier.dstAccessMask = dstAccessMask;
 			imageMemoryBarrier.oldLayout = oldImageLayout;
 			imageMemoryBarrier.newLayout = newImageLayout;
-			imageMemoryBarrier.subresourceRange = subResourceRange;
 			imageMemoryBarrier.image = image;
+			imageMemoryBarrier.subresourceRange = subResourceRange;
 
 			vkCmdPipelineBarrier(
 				commandBuffer,
@@ -339,7 +338,7 @@ namespace vkt
 			}
 			else
 			{
-				std::cerr << "Error: could not open sahder file " << filename << "\n";
+				std::cerr << "Error: could not open shader file " << filename << "\n";
 				return VK_NULL_HANDLE;
 			}
 			

@@ -50,7 +50,7 @@ namespace vkt
 		io.Fonts->AddFontFromFileTTF(filename.c_str(), 16.0f * scale);
 		io.Fonts->GetTexDataAsRGBA32(&fontData, &textureWidth, &textureHeight);
 
-		VkDeviceSize uploadSize = textureWidth * textureHeight * 4 * sizeof(float);
+		VkDeviceSize uploadSize = textureWidth * textureHeight * 4 * sizeof(char);
 		
 		ImGuiStyle style = ImGui::GetStyle();
 		style.ScaleAllSizes(scale);
@@ -97,6 +97,7 @@ namespace vkt
 		VK_CHECK_RESULT(device->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uploadSize, &stagingBuffer));
 		stagingBuffer.map();
 		memcpy(stagingBuffer.mapped, fontData, uploadSize);
+		int i = 0;
 
 		VkCommandBuffer copyCommand = device->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
 
@@ -236,6 +237,7 @@ namespace vkt
 			.stageCount = static_cast<uint32_t>(shaders.size()),
 			.pStages = shaders.data(),
 			.pVertexInputState = &vertexInputState,
+			.pInputAssemblyState = &inputAssemblyState,
 			.pViewportState = &viewportState,
 			.pRasterizationState = &rasterizationState,
 			.pMultisampleState = &multisampleState,

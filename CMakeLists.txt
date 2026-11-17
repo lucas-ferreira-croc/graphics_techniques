@@ -55,7 +55,6 @@ endif()
 # Asset and shader path selection
 IF(MSVC)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-    add_link_options("/ENTRY:mainCRTStartup")
 ENDIF(MSVC)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
