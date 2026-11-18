@@ -544,7 +544,7 @@ public:
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
 			.stage = VK_SHADER_STAGE_VERTEX_BIT,
-			.module = loadSPIRVShader(getShadersPath() + "triangle/triangle.vert.spv"),
+			.module = loadSPIRVShader(getShadersPath() + "trianglevulkan13/triangle.vert.spv"),
 			.pName = "main"
 		};
 		assert(shaderStages[0].module != VK_NULL_HANDLE);
@@ -553,7 +553,7 @@ public:
 		{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
 			.stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-			.module = loadSPIRVShader(getShadersPath() + "triangle/triangle.frag.spv"),
+			.module = loadSPIRVShader(getShadersPath() + "trianglevulkan13/triangle.frag.spv"),
 			.pName = "main"
 		};
 		assert(shaderStages[1].module != VK_NULL_HANDLE);
