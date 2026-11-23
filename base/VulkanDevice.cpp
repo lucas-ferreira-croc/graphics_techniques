@@ -248,7 +248,7 @@ namespace vkt
 		if(data != nullptr)
 		{
 			void* mapped;
-			VK_CHECK_RESULT(vkMapMemory(logicalDevice, *memory, 0, size, memoryPropertyFlags, &mapped));
+			VK_CHECK_RESULT(vkMapMemory(logicalDevice, *memory, 0, size, 0, &mapped));
 			memcpy(mapped, data, size);
 
 			if((memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)

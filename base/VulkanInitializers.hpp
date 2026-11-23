@@ -579,6 +579,17 @@ namespace vkt
             return pipelineCreateInfo;
         }
 
+        inline VkGraphicsPipelineCreateInfo pipelineCreateInfo(VkPipelineRenderingCreateInfoKHR& pipelineRenderingCreateInfo)
+        {
+            VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo
+            {
+                .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+                .pNext = &pipelineRenderingCreateInfo,
+            };
+
+            return graphicsPipelineCreateInfo;
+        }
+
         inline VkGraphicsPipelineCreateInfo pipelineCreateInfo()
         {
             VkGraphicsPipelineCreateInfo pipelineCreateInfo{};

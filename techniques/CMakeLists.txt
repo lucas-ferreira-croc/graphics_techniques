@@ -25,6 +25,8 @@ function(buildTechnique TECHNIQUE_NAME)
 	source_group("Shaders\\GLSL" FILES ${SHADERS_GLSL})
 	source_group("Shaders\\HLSL" FILES ${SHADERS_HLSL})
 	source_group("Shaders\\SLANG" FILES ${SHADERS_SLANG})
+	set_source_files_properties(${SHADERS_GLSL} ${SHADERS_HLSL} ${SHADERS_SLANG} PROPERTIES HEADER_FILE_ONLY TRUE)
+
 	# Add optional readme / tutorial
 	file(GLOB README_FILES "${TECHNIQUEFOLDER}/*.md")
 	if(WIN32)

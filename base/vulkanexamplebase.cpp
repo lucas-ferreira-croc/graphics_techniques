@@ -153,7 +153,7 @@ void VulkanExampleBase::setupDepthStencil()
         .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
         .imageType = VK_IMAGE_TYPE_2D,
         .format = depthFormat,
-        .extent = { .width = width, .height = height },
+        .extent = { width, height, 1 },
         .mipLevels = 1,
         .arrayLayers = 1,
         .samples = VK_SAMPLE_COUNT_1_BIT,
@@ -180,7 +180,7 @@ void VulkanExampleBase::setupDepthStencil()
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = depthFormat,
         .subresourceRange = {
-            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
             .baseMipLevel = 0,
             .levelCount = 1,
             .baseArrayLayer = 0,

@@ -610,9 +610,9 @@ namespace vkglTF
 	// gltf vertex layout to vulkan mapping
 
 
-	VkVertexInputBindingDescription vertexInputBindingDescription;
-	std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
-	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
+	VkVertexInputBindingDescription vkglTF::Vertex::vertexInputBindingDescription;
+	std::vector<VkVertexInputAttributeDescription> vkglTF::Vertex::vertexInputAttributeDescriptions;
+	VkPipelineVertexInputStateCreateInfo vkglTF::Vertex::pipelineVertexInputStateCreateInfo;
 
 	
 	VkVertexInputBindingDescription Vertex::inputBindingDescription(uint32_t binding)
@@ -666,7 +666,6 @@ namespace vkglTF
 		pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(Vertex::vertexInputAttributeDescriptions.size());
 		pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = Vertex::vertexInputAttributeDescriptions.data();
 		return &pipelineVertexInputStateCreateInfo;
-		return nullptr;
 	}
 
 
@@ -1479,15 +1478,15 @@ namespace vkglTF
 			{
 				bool skip = false;
 				const vkglTF::Material& material = primitive->material;
-				if(renderFlags | RenderFlags::RenderOpaqueNodes)
+				if(renderFlags & RenderFlags::RenderOpaqueNodes)
 				{
 					skip = (material.alphaMode != Material::ALPHAMODE_OPAQUE);
 				}
-				if (renderFlags | RenderFlags::RenderAlphaMaskedNodes)
+				if (renderFlags & RenderFlags::RenderAlphaMaskedNodes)
 				{
 					skip = (material.alphaMode != Material::ALPHAMODE_MASK);
 				}
-				if (renderFlags | RenderFlags::RenderAlphaBlendedNodes)
+				if (renderFlags & RenderFlags::RenderAlphaBlendedNodes)
 				{
 					skip = (material.alphaMode != Material::ALPHAMODE_BLEND);
 				}

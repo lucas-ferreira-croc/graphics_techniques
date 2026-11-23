@@ -352,7 +352,7 @@ public:
 		}
 	}
 
-	void setupDepthStencil()
+	void setupDepthStencil() override
 	{
 		VkImageCreateInfo imageCreateInfo
 		{
