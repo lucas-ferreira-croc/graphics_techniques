@@ -208,11 +208,11 @@ protected:
 	std::array<VkFence, maxConcurrentFrames> waitFences;
 
 	bool requiresStencil{ false };
+	void updateOverlay();
 private:
 	std::string getWindowTitle() const;
 	void handleMouseMove(uint32_t x, uint32_t y);
 	void nextFrame();
-	void updateOverlay();
 	void createPipelineCache();
 	void createCommandPool();
 	void createSyncronizationPrimitives();

@@ -433,7 +433,7 @@ void VulkanExampleBase::updateOverlay()
     ImGui::PopStyleVar();
     ImGui::Render();
 
-    ui.upate(currentBuffer);
+    ui.update(currentBuffer);
 }
 
 void VulkanExampleBase::createCommandBuffers()

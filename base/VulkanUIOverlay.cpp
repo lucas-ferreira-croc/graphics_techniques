@@ -47,7 +47,8 @@ namespace vkt
 		int textureWidth, textureHeight;
 
 		const std::string filename = getAssetPath() + "Roboto-Medium.ttf";
-		io.Fonts->AddFontFromFileTTF(filename.c_str(), 16.0f * scale);
+		float fontSize = 16.0f * (scale > 0.0f ? scale : 1.0f);
+		io.Fonts->AddFontFromFileTTF(filename.c_str(), fontSize);
 		io.Fonts->GetTexDataAsRGBA32(&fontData, &textureWidth, &textureHeight);
 
 		VkDeviceSize uploadSize = textureWidth * textureHeight * 4 * sizeof(char);
@@ -271,7 +272,7 @@ namespace vkt
 	}
 
 
-	void UIOverlay::upate(uint32_t currentBuffer)
+	void UIOverlay::update(uint32_t currentBuffer)
 	{
 		ImDrawData* imDrawData = ImGui::GetDrawData();
 
@@ -302,7 +303,7 @@ namespace vkt
 
 		}
 
-		if ((buffers[currentBuffer].indexBuffer.buffer == VK_NULL_HANDLE) || (buffers[currentBuffer].indexBuffer.size < indexBufferSize))
+		if((buffers[currentBuffer].indexBuffer.buffer == VK_NULL_HANDLE) || (buffers[currentBuffer].indexBuffer.size < indexBufferSize))
 		{
 			buffers[currentBuffer].indexBuffer.unmap();
 			buffers[currentBuffer].indexBuffer.destroy();
@@ -319,6 +320,7 @@ namespace vkt
 			const ImDrawList* cmd_list = imDrawData->CmdLists[n];
 			memcpy(vtxDst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
 			memcpy(idxDst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+			
 			vtxDst += cmd_list->VtxBuffer.Size;
 			idxDst += cmd_list->IdxBuffer.Size;
 		}
@@ -348,7 +350,7 @@ namespace vkt
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
 
-		pushConstantBlock.scale = glm::vec2(2.0f / io.DisplaySize.x / io.DisplaySize.y);
+		pushConstantBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
 		pushConstantBlock.translate = glm::vec2(-1.0f);
 		vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstantBlock), &pushConstantBlock);
 
@@ -361,7 +363,7 @@ namespace vkt
 		for(int32_t i = 0; i < imDrawData->CmdListsCount; i++)
 		{
 			const ImDrawList* cmd_list = imDrawData->CmdLists[i];
-			for(int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
+			for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
 			{
 				const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[j];
 				VkRect2D scissorRect
@@ -371,7 +373,7 @@ namespace vkt
 						.x = std::max((int32_t)(pcmd->ClipRect.x), 0),
 						.y = std::max((int32_t)(pcmd->ClipRect.y), 0)
 					},
-					.extent = 
+					.extent =
 					{
 						.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x),
 						.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y),
@@ -382,8 +384,8 @@ namespace vkt
 				vkCmdDrawIndexed(commandBuffer, pcmd->ElemCount, 1, indexOffset, vertexOffset, 0);
 
 				indexOffset += pcmd->ElemCount;
-				vertexOffset += cmd_list->VtxBuffer.Size;
 			}
+			vertexOffset += cmd_list->VtxBuffer.Size;
 		}
 	}
 
