@@ -62,6 +62,7 @@ endfunction(buildTechniques)
 set(TECHNIQUES
     trianglevulkan13
 	pipelines
+	descriptorsets
 )
 
 buildTechniques()

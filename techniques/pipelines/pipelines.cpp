@@ -20,7 +20,7 @@ public:
 		deviceCreatepNextChain = &enabledVulkan13Features;
 	}
 
-	~VulkanExample() override
+	~VulkanExample()
 	{
 		if(device)
 		{
@@ -33,6 +33,7 @@ public:
 			vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 			vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 			
+			vkDestroyCommandPool(device, commandPool, nullptr);
 			for (size_t i = 0; i < presentCompleteSemaphores.size(); i++)
 			{
 				vkDestroySemaphore(device, presentCompleteSemaphores[i], nullptr);
@@ -685,7 +686,6 @@ public:
 
 	VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
 	VkDescriptorSetLayout descriptorSetLayout{ VK_NULL_HANDLE };
-	std::array<VkDescriptorSet, maxConcurrentFrames> descriptorSets;
 
 	struct
 	{
