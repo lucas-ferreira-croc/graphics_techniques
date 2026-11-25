@@ -1,21 +1,16 @@
-#include "vulkanexamplebase.h"
+#include "VulkanDynamicRenderingBase.hpp"
 #include "VulkanglTFModel.h"
 
-class VulkanExample : public VulkanExampleBase
+class VulkanExample : public VulkanExampleBaseDynamicRendering
 {
 public:
-	VulkanExample() : VulkanExampleBase()
+	VulkanExample() : VulkanExampleBaseDynamicRendering()
 	{
 		title = "using descriptor types";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 512.0f);
 		camera.setRotation(glm::vec3(0.0f));
 		camera.setTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
-
-		apiVersion = VK_API_VERSION_1_3;
-		enabledVulkan13Features.dynamicRendering = VK_TRUE;
-		enabledVulkan13Features.synchronization2 = VK_TRUE;
-		deviceCreatepNextChain = &enabledVulkan13Features;
 	}
 
 	~VulkanExample()
@@ -30,7 +25,7 @@ public:
 
 			for (size_t i = 0; i < presentCompleteSemaphores.size(); i++)
 			{
-				vkDestroySemaphore(device, presentCompleteSemaphore[i], nullptr);
+				vkDestroySemaphore(device, presentCompleteSemaphores[i], nullptr);
 			}
 
 			for (size_t i = 0; i < renderCompleteSemaphores.size(); i++)
@@ -56,10 +51,7 @@ public:
 
 	virtual void getEnabledFeatures()
 	{
-		if(deviceProperties.apiVersion < VK_API_VERSION_1_3)
-		{
-			vkt::tools::exitFatal("selected gpou does not support vulkan 1.3", VK_ERROR_INCOMPATIBLE_DRIVER);
-		}
+		VulkanExampleBaseDynamicRendering::getEnabledFeatures();
 
 		if(deviceFeatures.samplerAnisotropy)
 		{
@@ -67,109 +59,7 @@ public:
 		}
 	}
 
-	uint32_t getMemoryTypeIndex(uint32_t typeBits, VkMemoryPropertyFlags properties)
-	{
-		for (uint32_t i = 0; i < deviceMemoryProperties.memoryTypeCount; i++)
-		{
-			if ((typeBits & 1) == 1)
-			{
-				if ((deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties)
-				{
-					return i;
-				}
-			}
-			typeBits >>= 1;
-		}
-		throw "could not find a suitable memory type";
-	}
 
-	VkShaderModule loadSPIRVShader(const std::string& filename)
-	{
-		size_t shaderSize;
-		char* shaderCode{ nullptr };
-
-		std::ifstream is(filename, std::ios::binary | std::ios::in | std::ios::ate);
-
-		if (is.is_open())
-		{
-			shaderSize = is.tellg();
-			is.seekg(0, std::ios::beg);
-
-			shaderCode = new char[shaderSize];
-			is.read(shaderCode, shaderSize);
-			is.close();
-			assert(shaderSize > 0);
-		}
-
-		if (shaderCode)
-		{
-			VkShaderModuleCreateInfo shaderModuleCreateInfo
-			{
-				.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-				.codeSize = shaderSize,
-				.pCode = (uint32_t*)shaderCode
-			};
-			VkShaderModule shaderModule;
-			VK_CHECK_RESULT(vkCreateShaderModule(device, &shaderModuleCreateInfo, nullptr, &shaderModule));
-			delete[] shaderCode;
-			return shaderModule;
-		}
-		else
-		{
-			std::cerr << "Error: could not open shader file \"" << filename << "\"" << std::endl;
-		}
-	}
-
-	void setupDepthStencil() override
-	{
-		VkImageCreateInfo imageCreateInfo
-		{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-			.imageType = VK_IMAGE_TYPE_2D,
-			.format = depthFormat,
-			.extent = { width, height, 1 },
-			.mipLevels = 1,
-			.arrayLayers = 1,
-			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.tiling = VK_IMAGE_TILING_OPTIMAL,
-			.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
-		};
-		VK_CHECK_RESULT(vkCreateImage(device, &imageCreateInfo, nullptr, &depthStencil.image));
-
-		VkMemoryRequirements memoryReqs;
-		vkGetImageMemoryRequirements(device, depthStencil.image, &memoryReqs);
-		VkMemoryAllocateInfo memoryAllocateInfo
-		{
-			.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			.allocationSize = memoryReqs.size,
-			.memoryTypeIndex = getMemoryTypeIndex(memoryReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-		};
-		VK_CHECK_RESULT(vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &depthStencil.memory));
-		VK_CHECK_RESULT(vkBindImageMemory(device, depthStencil.image, depthStencil.memory, 0));
-
-		VkImageViewCreateInfo depthStencilViewCreateInfo
-		{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			.image = depthStencil.image,
-			.viewType = VK_IMAGE_VIEW_TYPE_2D,
-			.format = depthFormat,
-			.subresourceRange =
-			{
-				.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			}
-		};
-
-		if (depthFormat >= VK_FORMAT_D16_UNORM_S8_UINT)
-		{
-			depthStencilViewCreateInfo.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
-		}
-		VK_CHECK_RESULT(vkCreateImageView(device, &depthStencilViewCreateInfo, nullptr, &depthStencil.view));
-	}
 
 	void loadAssets()
 	{
@@ -363,41 +253,6 @@ public:
 		}
 	}
 
-	void createSyncronizationPrimitives()
-	{
-		for(uint32_t i = 0; i < maxConcurrentFrames; i++)
-		{
-			VkFenceCreateInfo fenceCreateInfo = vkt::initializers::fenceCreateInfo(VK_FENCE_CREATE_SIGNALED_BIT);
-			VK_CHECK_RESULT(vkCreateFence(device, &fenceCreateInfo, nullptr, &waitFences[i]));
-		}
-
-		VkSemaphoreCreateInfo semaphoreCreateInfo = vkt::initializers::semaphoreCreateInfo();
-
-		presentCompleteSemaphore.resize(maxConcurrentFrames);
-		for(auto& semaphore : presentCompleteSemaphore)
-		{
-			VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphore));
-		}
-
-		renderCompleteSemaphore.resize(swapChain.images.size());
-		for (auto& semaphore : renderCompleteSemaphore)
-		{
-			VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &semaphore));
-		}
-	}
-
-	void createCommandBuffers()
-	{
-		VkCommandPoolCreateInfo commandPoolCreateInfo = vkt::initializers::commandPoolCreateInfo();
-		commandPoolCreateInfo.pNext = nullptr;
-		commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-		commandPoolCreateInfo.queueFamilyIndex = swapChain.queueNodeIndex;
-		VK_CHECK_RESULT(vkCreateCommandPool(device, &commandPoolCreateInfo, nullptr, &commandPool));
-
-		VkCommandBufferAllocateInfo commandBufferAllocateInfo = vkt::initializers::commandBufferAllocateInfo(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, maxConcurrentFrames);
-		VK_CHECK_RESULT(vkAllocateCommandBuffers(device, &commandBufferAllocateInfo, commandBuffers.data()));
-	}
-
 	void updateUniformBuffers()
 	{
 		cubes[0].matrices.model = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 0.0f, 0.0f));
@@ -419,7 +274,7 @@ public:
 	void prepare()
 	{
 		VulkanExampleBase::prepare();
-		createSyncronizationPrimitives();
+		createSynchronizationPrimitives();
 		createCommandBuffers();
 		loadAssets();
 		createUniformBuffers();
@@ -456,7 +311,7 @@ public:
 			VK_CHECK_RESULT(vkResetFences(device, 1, &waitFences[currentFrame]));
 
 			uint32_t imageIndex{ 0 };
-			VkResult result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, presentCompleteSemaphore[currentFrame], VK_NULL_HANDLE, &imageIndex);
+			VkResult result = vkAcquireNextImageKHR(device, swapChain.swapChain, UINT64_MAX, presentCompleteSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 			if(result == VK_ERROR_OUT_OF_DATE_KHR)
 			{
 				windowResize();
@@ -575,7 +430,7 @@ public:
 			{
 				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 				.waitSemaphoreCount = 1,
-				.pWaitSemaphores = &presentCompleteSemaphore[currentFrame],
+				.pWaitSemaphores = &presentCompleteSemaphores[currentFrame],
 				.pWaitDstStageMask = &waitStageMask,
 				.commandBufferCount = 1,
 				.pCommandBuffers = &commandBuffer,
@@ -617,18 +472,6 @@ public:
 public:
 	bool animate = true;
 
-	struct VulkanBuffeR
-	{
-		VkDeviceMemory memory{ VK_NULL_HANDLE };
-		VkBuffer handle;
-	};
-
-	struct UniformBuffer : VulkanBuffeR
-	{
-		VkDescriptorSet descriptorSet{ VK_NULL_HANDLE };
-		uint8_t* mapped{ nullptr };
-	};
-
 	struct Cube 
 	{
 		struct Matrices
@@ -646,23 +489,6 @@ public:
 	std::array<Cube, 2> cubes;
 
 	vkglTF::Model model;
-
-	VkPipelineLayout pipelineLayout{ VK_NULL_HANDLE };
-	VkPipeline pipeline{ VK_NULL_HANDLE };
-	VkDescriptorSetLayout descriptorSetLayout{ VK_NULL_HANDLE };
-
-	VkPhysicalDeviceVulkan13Features enabledVulkan13Features = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES };
-
-	std::vector<VkSemaphore> presentCompleteSemaphore{};
-	std::vector<VkSemaphore> renderCompleteSemaphore{};
-
-	std::array<VkFence, maxConcurrentFrames> waitFences;
-
-	std::array<VkCommandBuffer, maxConcurrentFrames> commandBuffers;
-
-	VkCommandPool commandPool{ VK_NULL_HANDLE };
-
-	uint32_t currentFrame{ 0 };
 };
 
 VULKAN_EXAMPLE_MAIN()

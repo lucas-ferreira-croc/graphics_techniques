@@ -228,7 +228,6 @@ private:
 	bool resizing = false;
 };
 
-
 #include "Entrypoints.h"
 
 #endif
