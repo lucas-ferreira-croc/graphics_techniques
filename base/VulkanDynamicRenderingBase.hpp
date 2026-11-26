@@ -177,10 +177,6 @@ public:
 		VkBuffer handle{ VK_NULL_HANDLE };
 	};
 
-	VulkanBuffer vertexBuffer;
-	VulkanBuffer indexBuffer;
-	uint32_t indexCount{ 0 };
-
 	struct UniformBuffer : VulkanBuffer
 	{
 		// store the resources bound to the binding points in a shader;

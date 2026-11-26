@@ -32,6 +32,11 @@ public:
 
 	std::array<UniformBuffer, MAX_CONCURRENT_FRAMES> uniformBuffers;
 
+	VulkanBuffer vertexBuffer;
+	VulkanBuffer indexBuffer;
+	uint32_t indexCount{ 0 };
+
+
 	VulkanExample() 
 		: VulkanExampleBaseDynamicRendering()
 	{

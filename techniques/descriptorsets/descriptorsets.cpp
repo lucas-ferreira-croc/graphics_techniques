@@ -230,6 +230,8 @@ public:
 			.layout = pipelineLayout,
 		};
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &graphicsPipelineCreateInfo, nullptr, &pipeline));
+		vkDestroyShaderModule(device, shaderStages[0].module, nullptr);
+		vkDestroyShaderModule(device, shaderStages[1].module, nullptr);
 	}
 
 	void createUniformBuffers()
