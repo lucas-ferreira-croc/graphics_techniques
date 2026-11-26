@@ -63,6 +63,7 @@ set(TECHNIQUES
     trianglevulkan13
 	pipelines
 	descriptorsets
+	dynamicuniformbuffers
 )
 
 buildTechniques()
